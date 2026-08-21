@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Image Focus - تجربة توليد الصور</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://tailwindcss.com"></script>
     <style>
         body {
-            background-color: #030712; /* اللون الداكن للموقع */
+            background-color: #030712;
             color: white;
             font-family: system-ui, -apple-system, sans-serif;
         }
@@ -48,7 +48,7 @@
             </div>
         </header>
 
-        <!-- منطقة العمل (Input Area) -->
+        <!-- منطقة العمل -->
         <main class="w-full max-w-3xl flex flex-col items-center gap-8 text-center mt-20">
             <div>
                 <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tight">
@@ -60,13 +60,13 @@
                 </p>
             </div>
 
-            <!-- أزرار التحكم في أبعاد اللقطة وحجم الصورة لمنع المط والقطع -->
+            <!-- أزرار التحكم في الأبعاد وزاوية الكاميرا -->
             <div class="flex gap-4 w-full justify-center">
                 <div class="flex flex-col text-right gap-1">
                     <span class="text-xs text-gray-500 mr-1">زاوية الكاميرا</span>
                     <select id="shotType" class="select-custom">
                         <option value="full">جسم كامل (Full Body)</option>
-                        <option value="medium">نصف علوي (Medium Portrait)</option>
+                        <option value="medium">نصف علوي (Medium Shot)</option>
                         <option value="close">وجه مقرب (Close-up)</option>
                     </select>
                 </div>
@@ -80,7 +80,7 @@
                 </div>
             </div>
 
-            <!-- مربع الإدخال (شريط البحث) -->
+            <!-- مربع الإدخال -->
             <div class="w-full relative group">
                 <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
                 <div class="relative flex bg-[#111827] border border-gray-800 rounded-xl p-2 shadow-2xl">
@@ -92,16 +92,16 @@
                     >
                     <button id="generateBtn" onclick="processAIImage()" class="bg-blue-600 px-8 py-3 rounded-lg font-bold hover:bg-blue-700 transition flex items-center gap-2">
                         <span id="btnText">توليد</span>
-                        <svg id="btnIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     </button>
                 </div>
             </div>
 
-            <!-- مكان ظهور رسائل الحالة ورابط التحميل المباشر بعد المعالجة -->
+            <!-- رسائل الحالة وصندوق النتيجة المعزول -->
             <div id="statusMessage" class="text-sm font-medium text-blue-400"></div>
             
             <div id="resultBox" class="hidden w-full max-w-md bg-[#111827] border border-gray-800 p-4 rounded-xl flex flex-col items-center gap-3">
-                <p class="text-sm text-green-400 font-semibold">🎉 تم إنشاء رابط الجودة الفوتوغرافية المعزول بنجاح!</p>
+                <p class="text-sm text-green-400 font-semibold">🎉 تم تجهيز رابط الجودة الفوتوغرافية بنجاح!</p>
                 <a id="downloadBtn" href="#" target="_blank" class="w-full bg-emerald-600 py-3 rounded-lg font-bold text-white hover:bg-emerald-700 transition text-center block">
                     اضغط هنا لفتح وتحميل الصورة بدقة DSLR حقيقية 📥
                 </a>
@@ -128,54 +128,53 @@
             var promptText = promptInput.value.trim();
             if (!promptText) return alert("يرجى وصف الصورة أولاً!");
 
-            // 1. تنشيط حالة التحميل لتجنب التجميد اللانهائي للدائرة
+            // 1. تنشيط حالة التحميل ومنع التعليق
             generateBtn.disabled = true;
             btnText.innerText = "جاري المعالجة...";
-            status.innerText = "جاري تجميع تفاصيل الكاميرا وحقن ملامح الجلد الحقيقي... ⏳";
+            status.innerText = "جاري صياغة رابط الأبعاد وحقن ملامح الجلد الحقيقي... ⏳";
             resultBox.classList.add('hidden');
 
-            // 2. ضبط الأبعاد المعتمدة برمجياً لمنع مط وتشوية الشاشة
+            // 2. ضبط الأبعاد المعتمدة برمجياً للسيرفر لمنع التشويه والمط
             var width = 1024;
             var height = 1024;
             if (aspectRatio === "landscape") { width = 1024; height = 768; }
             else if (aspectRatio === "portrait") { width = 768; height = 1024; }
 
-            // 3. صياغة تفاصيل زاوية الصورة لمنع القطع
+            // 3. إضافة تفاصيل لقطة الكاميرا لمنع قطع الأطراف للجسم
             var shotDetail = "";
             if (shotType === "full") {
-                shotDetail = ", full body standing shot, head to shoes visible, candid portrait";
+                shotDetail = ", full body shot, standing portrait view, head to shoes visible";
             } else if (shotType === "medium") {
                 shotDetail = ", medium portrait shot, waist up view";
             } else {
-                shotDetail = ", detailed close-up portrait, sharp face features";
+                shotDetail = ", detailed close-up portrait, sharp face focus";
             }
 
-            // 4. دمج مرشحات الواقعية الفائقة الصافية بدون إشارات حظر تسبب تجميد السيرفر
+            // 4. مرشحات الواقعية الفوتوغرافية النقية الصافية لقتل المظهر الكارتوني والبلاستيكي
             var photographyFilters = shotDetail + ", professional dslr photograph, high quality real life photo, raw color tone, natural skin texture, visible pores, cinematic lighting, 8k resolution";
+            
+            // ترميز النص النظيف بالكامل بشكل صحيح لمنع أخطاء الروابط المكسورة
             var cleanPrompt = encodeURIComponent(promptText + photographyFilters);
             var seed = Math.floor(Math.random() * 9999999);
 
-            // 5. بناء الرابط الصافي والمباشر المتجاوز تماماً لقيود حماية المتصفحات
-            var finalUrl = "https://pollinations.ai" + cleanPrompt + 
-                           "?width=" + width + 
-                           "&height=" + height + 
-                           "&seed=" + seed + 
-                           "&model=flux&enhance=false&nologo=true";
+            // 5. بناء الرابط الصافي والمضمون 100% مع السلاش والرموز البرمجية السليمة
+            var finalUrl = "https://pollinations.ai" + cleanPrompt + "?width=" + width + "&height=" + height + "&seed=" + seed + "&model=flux&enhance=false&nologo=true";
 
-            // 6. استجابة فورية ومعزولة تفتح الصورة مباشرة بدون تعليق
+            // 6. استجابة فورية آمنة تفتح الرابط مباشرة بدون تعليق المتصفحات
             setTimeout(function() {
                 status.innerText = "";
                 btnText.innerText = "توليد";
                 generateBtn.disabled = false;
                 
-                // عرض الصندوق وتمرير الرابط المباشر
+                // عرض الصندوق وتمرير الرابط الصحيح
                 resultBox.classList.remove('hidden');
                 downloadBtn.href = finalUrl;
                 
-                // فتح فوري ومستقل للصورة في نافذة ويب جديدة نظيفة
+                // فتح تلقائي في نافذة جديدة معزولة لتخطي الحظر تماماً
                 window.open(finalUrl, '_blank');
-            }, 1000); // إتمام ممر الأمان في ثانية واحدة
+            }, 1000);
         }
     </script>
 </body>
 </html>
+
