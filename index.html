@@ -3,274 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Image Focus All</title>
+    <title>FIRASAL AI PRO</title>
     <style>
         body {
-            background-color: #030712;
-            color: white;
-            font-family: system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
         }
-        .glow-effect {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            transform: translateX(-50%);
-            z-index: 0;
-            height: 400px;
-            width: 800px;
-            border-radius: 50%;
-            background: linear-gradient(to right, #6d28d9, transparent, #3b82f6);
-            opacity: 0.15;
-            filter: blur(100px);
-            pointer-events: none;
-        }
-        .container {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-            margin-top: 40px;
-        }
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        .logo-dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            background-color: #2563eb;
-            border-radius: 3px;
-        }
-        .logo-blue { color: #3b82f6; }
-        h1 {
-            font-size: 42px;
-            font-weight: 900;
-            margin-bottom: 10px;
-            line-height: 1.2;
-        }
-        .gradient-text {
-            background: linear-gradient(to right, #60a5fa, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .desc {
-            color: #9ca3af;
-            font-size: 16px;
-            margin-bottom: 30px;
-        }
+        .container { width: 100%; max-width: 600px; }
+        header { margin-bottom: 30px; text-align: center; }
         .card {
-            background-color: #111827;
-            border: 1px solid #1f2937;
-            border-radius: 16px;
+            background: #161b22;
             padding: 25px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            border-radius: 16px;
+            border: 1px solid #30363d;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
-        .options-row {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-        .select-custom {
-            flex: 1;
-            background-color: #1f2937;
-            border: 1px solid #374151;
-            color: #d1d5db;
+        textarea {
+            width: 100%;
+            height: 100px;
+            background: #0d1117;
+            color: white;
+            border: 1px solid #30363d;
+            border-radius: 8px;
             padding: 12px;
-            border-radius: 8px;
-            outline: none;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .search-box {
-            display: flex;
-            background-color: #1f2937;
-            border: 1px solid #374151;
-            border-radius: 12px;
-            padding: 6px;
-            align-items: center;
-        }
-        input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: white;
+            box-sizing: border-box;
             font-size: 16px;
-            padding: 10px;
+            resize: none;
         }
-        input::placeholder { color: #4b5563; }
+        .controls { display: flex; gap: 10px; margin-top: 15px; }
         button {
-            background-color: #2563eb;
-            color: white;
+            flex: 1;
+            padding: 15px;
             border: none;
             border-radius: 8px;
-            padding: 12px 28px;
-            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.3s;
         }
-        button:hover { background-color: #1d4ed8; }
-        button:disabled { background-color: #4b5563; cursor: not-allowed; }
-        #statusMessage {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #60a5fa;
-            font-weight: 500;
-        }
+        #generateBtn { background: #238636; color: white; }
+        #generateBtn:hover { background: #2ea043; }
+        #generateBtn:disabled { background: #21262d; cursor: not-allowed; }
+        #downloadBtn { background: #21262d; color: #58a6ff; border: 1px solid #30363d; text-decoration: none; display: none; text-align: center; line-height: 15px; }
+        #statusMessage { margin-top: 15px; font-size: 14px; color: #8b949e; text-align: center; }
         .result-box {
             margin-top: 20px;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            background-color: #030712;
-            border: 1px solid #1f2937;
-            padding: 15px;
+            min-height: 300px;
+            background: #0d1117;
             border-radius: 12px;
-        }
-        .image-wrapper {
-            width: 100%;
-            margin-top: 10px;
-            background-color: #111827;
-            border: 1px solid #1f2937;
-            border-radius: 8px;
-            overflow: hidden;
             display: flex;
-            justify-content: center;
             align-items: center;
-            min-height: 250px;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px dashed #30363d;
         }
-        .result-box img {
-            max-width: 100%;
-            height: auto;
-            display: block;
+        #outputImage { max-width: 100%; display: none; }
+        .loader {
+            border: 4px solid #30363d;
+            border-top: 4px solid #58a6ff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
         }
-        .link-btn {
-            background-color: #059669;
-            color: white;
-            padding: 14px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            display: block;
-            width: 90%;
-            margin-top: 15px;
-            text-align: center;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .link-btn:hover { background-color: #047857; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-
-    <div class="glow-effect"></div>
-
     <div class="container">
-        <div class="logo">
-            <span class="logo-dot"></span>
-            AI Focus <span class="logo-blue">All</span>
-        </div>
+        <header>
+            <h1>FIRASAL REALISM 📸</h1>
+            <p>مشروع صور فوتوغرافية واقعية مستقر</p>
+        </header>
 
-        <h1>حول كلماتك إلى<br><span class="gradient-text">فن مذهل</span></h1>
-        <p class="desc">استخدم قوة الذكاء الاصطناعي لتوليد صور فوتوغرافية فائقة الجودة وبجسم كامل فوراً.</p>
-
-        <div class="card">
-            <div class="options-row">
-                <select id="shotType" class="select-custom">
-                    <option value="full">جسم كامل بدون قطع (Full Body)</option>
-                    <option value="medium">نصف علوي (Medium Shot)</option>
-                    <option value="close">وجه مقرب (Close-up)</option>
-                </select>
-                <select id="aspectRatio" class="select-custom">
-                    <option value="portrait">مقاس طولي طبيعي (768x1024)</option>
-                    <option value="landscape">مقاس عرضي سينمائي (1024x768)</option>
-                    <option value="square">مقاس مربع قياسي (1024x1024)</option>
-                </select>
-            </div>
-
-            <div class="search-box">
-                <input id="promptInput" type="text" placeholder="اكتب وصفك هنا بالإنجليزية...">
-                <!-- تم تصحيح وربط الزر برمجياً بشكل مباشر وآمن -->
-                <button id="generateBtn">توليد</button>
+        <main class="card">
+            <textarea id="promptInput" placeholder="اكتب وصف الصورة بالإنجليزية (مثلاً: a beautiful white cat)..."></textarea>
+            
+            <div class="controls">
+                <button id="generateBtn" onclick="startGeneration()">توليد الصورة ✨</button>
+                <a id="downloadBtn" href="#" target="_blank" download="firasal-ai.png">تحميل الصورة 📥</a>
             </div>
 
             <div id="statusMessage"></div>
 
-            <div class="result-box" id="resultBox">
-                <p style="margin: 0; color: #34d399; font-weight: bold;">🎉 تم معالجة طلب الصورة بنجاح!</p>
-                <div class="image-wrapper">
-                    <img id="outputImage" alt="AI Production Output Frame">
-                </div>
-                <a id="downloadBtn" class="link-btn" href="#" target="_blank" download="firasal-ai-photo.png">تحميل الصورة بجهازك فوراً 📥</a>
+            <div class="result-box">
+                <div id="loader" class="loader" style="display: none;"></div>
+                <img id="outputImage" alt="AI Generated Result">
             </div>
-        </div>
+        </main>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        function startGeneration() {
+            var promptInput = document.getElementById('promptInput');
             var generateBtn = document.getElementById('generateBtn');
-            
-            // ربط الحدث البرمجي بشكل صلب لضمان استجابة النقر الفورية بالمتصفح
-            generateBtn.addEventListener('click', function() {
-                var promptInput = document.getElementById('promptInput');
-                var status = document.getElementById('statusMessage');
-                var resultBox = document.getElementById('resultBox');
-                var outputImage = document.getElementById('outputImage');
-                var downloadBtn = document.getElementById('downloadBtn');
-                var shotType = document.getElementById('shotType').value;
-                var aspectRatio = document.getElementById('aspectRatio').value;
+            var downloadBtn = document.getElementById('downloadBtn');
+            var outputImage = document.getElementById('outputImage');
+            var loader = document.getElementById('loader');
+            var status = document.getElementById('statusMessage');
 
-                var promptText = promptInput.value.trim();
-                if (!promptText) return alert("يرجى وصف الصورة أولاً!");
+            var promptText = promptInput.value.trim();
+            if (!promptText) return alert("يرجى إدخال وصف أولاً!");
 
-                // قفل الزر وتنشيط اللودينج لمنع التكرار والتراقص كلياً
-                generateBtn.disabled = true;
-                status.innerText = "جاري تفعيل الحقيقة الفوتوغرافية وسحب ملامح الكاميرا الاحترافية... ⏳";
-                resultBox.style.display = "none";
+            // تثبيت الواجهة لتوضيح عملية المعالجة
+            generateBtn.disabled = true;
+            loader.style.display = "block";
+            outputImage.style.display = "none";
+            downloadBtn.style.display = "none";
+            status.innerText = "جاري جلب الصورة من خوادم الواقعية... ⏳";
 
-                var width = 1024;
-                var height = 1024;
-                if (aspectRatio === "landscape") { width = 1024; height = 768; }
-                else if (aspectRatio === "portrait") { width = 768; height = 1024; }
+            // إضافة محسنات الصورة الاحترافية
+            var enhancements = ", photorealistic, 8k resolution, raw photo, highly detailed skin texture, dslr portrait";
+            var cleanPrompt = encodeURIComponent(promptText + enhancements);
+            var seed = Math.floor(Math.random() * 9999999);
 
-                var shotDetail = "";
-                if (shotType === "full") {
-                    shotDetail = ", full body standing shot, head to shoes visible, candid real photo";
-                } else if (shotType === "medium") {
-                    shotDetail = ", medium portrait shot, waist up view";
-                } else {
-                    shotDetail = ", detailed close-up portrait, sharp face focus";
-                }
+            // البناء التقليدي المباشر للرابط المفتوح والمستقر لـ Pollinations لعام 2026
+            var finalUrl = "https://image.pollinations.ai/prompt/" + cleanPrompt + "?width=1024&height=1024&seed=" + seed + "&model=flux&nologo=true";
 
-                var photographyFilters = shotDetail + ", professional dslr photograph, high quality real life photo, raw color tone, natural skin texture, visible pores, 8k resolution";
-                var cleanPrompt = encodeURIComponent(promptText + photographyFilters);
-                var seed = Math.floor(Math.random() * 9999999);
+            // إرسال الصورة للعرض المباشر في المتصفح لتفادي حظر الـ CORS
+            outputImage.src = finalUrl;
 
-                var finalUrl = "https://pollinations.ai" + cleanPrompt + "?width=" + width + "&height=" + height + "&seed=" + seed + "&model=flux&enhance=false&nologo=true";
-
-                // إلغاء دوال الخطأ التكرارية تماماً لمنع الوميض والاهتزاز اللانهائي
-                outputImage.onload = null;
-                outputImage.onerror = null;
-
-                // تمرير الرابط المباشر
-                outputImage.src = finalUrl;
+            outputImage.onload = function() {
+                loader.style.display = "none";
+                outputImage.style.display = "block";
                 downloadBtn.href = finalUrl;
+                downloadBtn.style.display = "inline-block";
+                generateBtn.disabled = false;
+                status.innerText = "تمت المعالجة بنجاح! 🎉";
+            };
 
-                // إظهار الصندوق بثبات تام وهدوء بعد أجزاء من الثانية لتخطي تجميد المتصفحات
-                setTimeout(function() {
-                    status.innerText = "";
-                    generateBtn.disabled = false;
-                    resultBox.style.display = "flex";
-                }, 1000);
+            outputImage.onerror = function() {
+                loader.style.display = "none";
+                generateBtn.disabled = false;
+                // رابط طوارئ صريح في حال منعت إعدادات الأمان المحلية الاتصال بالسيرفر
+                status.innerHTML = "إذا حجب المتصفح الصورة، <a href='" + finalUrl + "' target='_blank' style='color: #58a6ff; font-weight: bold; text-decoration: underline;'>اضغط هنا لفتح الرابط وعرض الصورة فوراً</a>.";
+            };
+        }
+    </script>
+</body>
+</html>
