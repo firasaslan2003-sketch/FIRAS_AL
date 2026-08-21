@@ -14,7 +14,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: screen;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
         .glow-effect {
             position: absolute;
@@ -35,7 +36,6 @@
             width: 100%;
             max-width: 600px;
             text-align: center;
-            margin-top: 40px;
         }
         .logo {
             font-size: 28px;
@@ -136,6 +136,12 @@
             padding: 15px;
             border-radius: 12px;
         }
+        .result-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
         .link-btn {
             background-color: #059669;
             color: white;
@@ -145,7 +151,7 @@
             font-weight: bold;
             display: block;
             width: 90%;
-            margin-top: 10px;
+            margin-top: 15px;
         }
         .link-btn:hover { background-color: #047857; }
     </style>
@@ -164,7 +170,6 @@
         <p class="desc">استخدم قوة الذكاء الاصطناعي لتوليد صور فوتوغرافية فائقة الجودة وبجسم كامل فوراً.</p>
 
         <div class="card">
-            <!-- التحكم بالأبعاد وزاوية الكاميرا لمنع التشويه والقطع والكارتون -->
             <div class="options-row">
                 <select id="shotType" class="select-custom">
                     <option value="full">جسم كامل بدون قطع (Full Body)</option>
@@ -173,12 +178,11 @@
                 </select>
                 <select id="aspectRatio" class="select-custom">
                     <option value="portrait">مقاس طولي طبيعي (768x1024)</option>
-                    <option value="landscape">مقاس عرضي سينمائي (1024x768)</option>
+                    <option value="landscape">مقاس عرضي سينمائية (1024x768)</option>
                     <option value="square">مقاس مربع قياسي (1024x1024)</option>
                 </select>
             </div>
 
-            <!-- شريط البحث الفاخر الخاص بك -->
             <div class="search-box">
                 <input id="promptInput" type="text" placeholder="صف الصورة التي تتخيلها هنا بالإنجليزية...">
                 <button id="generateBtn" onclick="processAIImage()">توليد</button>
@@ -187,8 +191,9 @@
             <div id="statusMessage"></div>
 
             <div class="result-box" id="resultBox">
-                <p style="margin: 0 0 10px 0; color: #34d399; font-weight: bold;">🎉 تم تجهيز الصورة بنقاء كاميرات DSLR الحقيقية!</p>
-                <a id="downloadBtn" class="link-btn" href="#" target="_blank">اضغط هنا لفتح وتحميل الصورة فوتوغرافية فوراً 📥</a>
+                <p style="margin: 0; color: #34d399; font-weight: bold;">🎉 تم توليد الصورة بنقاء فوتوغرافي كامل!</p>
+                <img id="outputImage" src="" alt="AI Result">
+                <a id="downloadBtn" class="link-btn" href="#" target="_blank" download="firasal-ai.png">تحميل الصورة بدقة DSLR حقيقية 📥</a>
             </div>
         </div>
     </div>
@@ -199,6 +204,7 @@
             var generateBtn = document.getElementById('generateBtn');
             var status = document.getElementById('statusMessage');
             var resultBox = document.getElementById('resultBox');
+            var outputImage = document.getElementById('outputImage');
             var downloadBtn = document.getElementById('downloadBtn');
             var shotType = document.getElementById('shotType').value;
             var aspectRatio = document.getElementById('aspectRatio').value;
@@ -207,7 +213,7 @@
             if (!promptText) return alert("يرجى وصف الصورة أولاً!");
 
             generateBtn.disabled = true;
-            status.innerText = "جاري تفعيل المرشح الحقيقي ومعالجة أبعاد الجسم... ⏳";
+            status.innerText = "جاري الاتصال بمحرك الحقيقة ومعالجة تفاصيل الجسم... ⏳";
             resultBox.style.display = "none";
 
             var width = 1024;
@@ -224,23 +230,32 @@
                 shotDetail = ", detailed close-up portrait, sharp face focus";
             }
 
-            // فلاتر نقية ومستقرة تفرض جودة الحقيقة والمسام وتدمر الكارتون
             var photographyFilters = shotDetail + ", professional dslr photograph, high quality real life photo, raw color tone, natural skin texture, visible pores, 8k resolution";
             var cleanPrompt = encodeURIComponent(promptText + photographyFilters);
             var seed = Math.floor(Math.random() * 9999999);
 
-            // بناء الرابط الصافي والمباشر السليم 100% لتخطي حظر المتصفحات
+            // رابط مباشر نظيف معتمد وآمن تماماً لـ GitHub
             var finalUrl = "https://pollinations.ai" + cleanPrompt + "?width=" + width + "&height=" + height + "&seed=" + seed + "&model=flux&enhance=false&nologo=true";
 
-            setTimeout(function() {
+            // جلب الصورة وعرضها مباشرة داخل الكرت دون فتح نوافذ منبثقة محظورة
+            outputImage.src = finalUrl;
+
+            outputImage.onload = function() {
                 status.innerText = "";
                 generateBtn.disabled = false;
                 resultBox.style.display = "flex";
                 downloadBtn.href = finalUrl;
-                
-                // فتح فوري آمن ومستقل لتخطي اللودينج المعلق
-                window.open(finalUrl, '_blank');
-            }, 1000);
+            };
+
+            outputImage.onerror = function() {
+                status.innerText = "";
+                generateBtn.disabled = false;
+                // ممر طوارئ آمن جداً ومبسط
+                var fallbackUrl = "https://pollinations.ai" + encodeURIComponent(promptText + ", photo, real") + "?seed=" + seed;
+                outputImage.src = fallbackUrl;
+                resultBox.style.display = "flex";
+                downloadBtn.href = fallbackUrl;
+            };
         }
     </script>
 </body>
