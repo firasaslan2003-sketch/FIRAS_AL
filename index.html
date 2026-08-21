@@ -207,31 +207,30 @@
             <div id="statusMessage"></div>
 
             <div class="result-box" id="resultBox">
-                <p style="margin: 0; color: #34d399; font-weight: bold;">🎉 تم توليد الصورة بنقاء فوتوغرافي كامل!</p>
+                <p style="margin: 0; color: #34d399; font-weight: bold;">🎉 تم معالجة طلب الصورة بنجاح!</p>
                 <div class="image-wrapper">
-                    <img id="outputImage" alt="AI Generated Graphic Output">
+                    <img id="outputImage" alt="AI Production Output">
                 </div>
-                <button id="downloadBtn" class="link-btn" onclick="saveImageToDevice()">تحميل الصورة بجهازك فوراً 📥</button>
+                <a id="downloadBtn" class="link-btn" href="#" target="_blank" download="firasal-ai-photo.png">تحميل الصورة بجهازك فوراً 📥</a>
             </div>
         </div>
     </div>
 
     <script>
-        var cleanBlobUrl = ""; // لحفظ مسار الصورة النظيف والآمن بالمتصفح
-
-        async function processAIImage() {
+        function processAIImage() {
             var promptInput = document.getElementById('promptInput');
             var generateBtn = document.getElementById('generateBtn');
             var status = document.getElementById('statusMessage');
             var resultBox = document.getElementById('resultBox');
             var outputImage = document.getElementById('outputImage');
+            var downloadBtn = document.getElementById('downloadBtn');
             var shotType = document.getElementById('shotType').value;
             var aspectRatio = document.getElementById('aspectRatio').value;
 
             var promptText = promptInput.value.trim();
             if (!promptText) return alert("يرجى وصف الصورة أولاً!");
 
-            // 1. قفل الواجهة وتأكيد بدء الجلب لمنع التراقص
+            // تنشيط قفل المعالجة الفوري لمنع تكرار النقر والتراقص كلياً
             generateBtn.disabled = true;
             status.innerText = "جاري جلب تفاصيل الكاميرا الحقيقية وبناء الملامح الحية... ⏳";
             resultBox.style.display = "none";
@@ -254,28 +253,24 @@
             var cleanPrompt = encodeURIComponent(promptText + photographyFilters);
             var seed = Math.floor(Math.random() * 9999999);
 
-            // بناء رابط السيرفر المباشر
+            // بناء الرابط الصافي لتمريره مباشرة للوسم دون دوال حجب
             var finalUrl = "https://pollinations.ai" + cleanPrompt + "?width=" + width + "&height=" + height + "&seed=" + seed + "&model=flux&enhance=false&nologo=true";
 
-            // 2. استخدام نظام الطلب الخفي الصافي (Advanced Fetch Mode) لتخطي حظر الكود تماماً
-            try {
-                var response = await fetch(finalUrl);
-                if (!response.ok) throw new Error("Server error");
-                
-                var blob = await response.blob();
-                
-                // تنظيف أي روابط قديمة بالذاكرة لمنع تراكم الملفات وتراقص الشاشة
-                if (cleanBlobUrl) window.URL.revokeObjectURL(cleanBlobUrl);
-                
-                // تحويل المورد لصيغة آمنة ومصادق عليها محلياً داخل متصفحك
-                cleanBlobUrl = window.URL.createObjectURL(blob);
-                
-                // عرض الصورة وتثبيتها بشكل صلب
-                outputImage.src = cleanBlobUrl;
+            // قطع وإلغاء دوال الـ onerror التكرارية لقتل الوميض والاهتزاز تماماً وللأبد
+            outputImage.onload = null;
+            outputImage.onerror = null;
+
+            // تمرير الرابط المباشر للمتصفح
+            outputImage.src = finalUrl;
+            downloadBtn.href = finalUrl;
+
+            // إظهار النتائج بشكل مستقر وثابت تماماً بعد نصف ثانية فقط لتفادي تجميد المتصفحات
+            setTimeout(function() {
                 status.innerText = "";
                 generateBtn.disabled = false;
                 resultBox.style.display = "flex";
-
-            } catch (error) {
-
-
+            }, 800);
+        }
+    </script>
+</body>
+</html>
