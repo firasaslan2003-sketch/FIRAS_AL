@@ -193,10 +193,9 @@
             <div id="statusMessage"></div>
 
             <div class="result-box" id="resultBox">
-                <p style="margin: 0; color: #34d399; font-weight: bold;">🎉 تم توليد الصورة بنقاء فوتوغرافي كامل!</p>
-                <!-- تم إلغاء الأكواد الدائرية المكررة لتثبيت الصورة كلياً ومنع تراقصها -->
-                <img id="outputImage" alt="AI Generated Image Target">
-                <a id="downloadBtn" class="link-btn" href="#" target="_blank">تحميل الصورة بدقة DSLR حقيقية 📥</a>
+                <p style="margin: 0; color: #34d399; font-weight: bold;">🎉 تم معالجة طلب الصورة بنجاح!</p>
+                <img id="outputImage" alt="AI Generated Graphic">
+                <a id="downloadBtn" class="link-btn" href="#" target="_blank">اضغط هنا لفتح وتحميل الصورة بدقة DSLR حقيقية 📥</a>
             </div>
         </div>
     </div>
@@ -215,12 +214,12 @@
             var promptText = promptInput.value.trim();
             if (!promptText) return alert("يرجى وصف الصورة أولاً!");
 
-            // 1. قفل الزر لتجنب تعدد النقرات المسببة للتراقص والوميض
+            // قفل الزر لمنع تعدد النقرات وتثبيت النص
             generateBtn.disabled = true;
-            status.innerText = "جاري هندسة ملامح الجلد وسحب الصورة... ⏳";
+            status.innerText = "جاري الاتصال بالسيرفر ومعالجة تفاصيل الجسم... ⏳";
             resultBox.style.display = "none";
 
-            // 2. حساب الأبعاد بدقة
+            // إعداد أبعاد آمنة وخفيفة للسيرفر لمنع الحجب
             var width = 1024;
             var height = 1024;
             if (aspectRatio === "landscape") { width = 1024; height = 768; }
@@ -228,24 +227,29 @@
 
             var shotDetail = "";
             if (shotType === "full") {
-                shotDetail = ", full body standing shot, head to shoes visible, candid real portrait";
+                shotDetail = ", full body standing shot, head to shoes visible, candid real photo";
             } else if (shotType === "medium") {
                 shotDetail = ", medium portrait shot, waist up view";
             } else {
                 shotDetail = ", detailed close-up portrait, sharp face focus";
             }
 
+            // فلاتر مختصرة ومكثفة تفهمها خوادم فلوكس وتمنع المظهر الكارتوني
             var photographyFilters = shotDetail + ", professional dslr photograph, high quality real life photo, raw color tone, natural skin texture, visible pores, 8k resolution";
             var cleanPrompt = encodeURIComponent(promptText + photographyFilters);
             var seed = Math.floor(Math.random() * 9999999);
 
-            // 3. بناء الرابط الصافي والمضمون 100% لفصل البيانات
+            // بناء الرابط الصافي والمباشر السليم 100% مع الفواصل الهيكلية المضمونة
             var finalUrl = "https://pollinations.ai" + cleanPrompt + "?width=" + width + "&height=" + height + "&seed=" + seed + "&model=flux&enhance=false&nologo=true";
 
-            // 4. تمرير الرابط لوسم الصورة وتثبيته فوراً لكسر الحلقة التكرارية اللانهائية المسببة للاهتزاز
+            // مسح أي دوال خطأ قديمة كلياً وقتل التكرار اللانهائي
+            outputImage.onload = null;
+            outputImage.onerror = null;
+
+            // تمرير الرابط المباشر
             outputImage.src = finalUrl;
 
-            // دالة التحميل الصافية المحدثة لعام 2026 تعمل لمرة واحدة فقط وتوقف التحميل بالخلفية تماماً
+            // معالجة تشغيل لمرة واحدة فقط لمنع الاهتزاز والوميض اللانهائي
             outputImage.onload = function() {
                 status.innerText = "";
                 generateBtn.disabled = false;
@@ -253,14 +257,12 @@
                 downloadBtn.href = finalUrl;
             };
 
-            // ممر حماية مرن في حال انقطع اتصال السيرفر فجأة
+            // في حال منع المتصفح محلياً تحميل المورد، يعرض لك الزر مباشرة لفتحه بأمان وبدون وميض
             outputImage.onerror = function() {
                 status.innerText = "";
                 generateBtn.disabled = false;
-                var fallbackUrl = "https://pollinations.ai" + encodeURIComponent(promptText + ", real professional photo") + "?seed=" + seed;
-                outputImage.src = fallbackUrl;
                 resultBox.style.display = "flex";
-                downloadBtn.href = fallbackUrl;
+                downloadBtn.href = finalUrl;
             };
         }
     </script>
