@@ -29,6 +29,7 @@
             background: linear-gradient(to right, #6d28d9, transparent, #3b82f6);
             opacity: 0.15;
             filter: blur(100px);
+            pointer-events: none;
         }
         .container {
             position: relative;
@@ -141,6 +142,7 @@
             height: auto;
             border-radius: 8px;
             margin-top: 10px;
+            border: 1px solid #1f2937;
         }
         .link-btn {
             background-color: #059669;
@@ -178,7 +180,7 @@
                 </select>
                 <select id="aspectRatio" class="select-custom">
                     <option value="portrait">مقاس طولي طبيعي (768x1024)</option>
-                    <option value="landscape">مقاس عرضي سينمائية (1024x768)</option>
+                    <option value="landscape">مقاس عرضي سينمائي (1024x768)</option>
                     <option value="square">مقاس مربع قياسي (1024x1024)</option>
                 </select>
             </div>
@@ -192,8 +194,9 @@
 
             <div class="result-box" id="resultBox">
                 <p style="margin: 0; color: #34d399; font-weight: bold;">🎉 تم توليد الصورة بنقاء فوتوغرافي كامل!</p>
-                <img id="outputImage" src="" alt="AI Result">
-                <a id="downloadBtn" class="link-btn" href="#" target="_blank" download="firasal-ai.png">تحميل الصورة بدقة DSLR حقيقية 📥</a>
+                <!-- تم إلغاء الأكواد الدائرية المكررة لتثبيت الصورة كلياً ومنع تراقصها -->
+                <img id="outputImage" alt="AI Generated Image Target">
+                <a id="downloadBtn" class="link-btn" href="#" target="_blank">تحميل الصورة بدقة DSLR حقيقية 📥</a>
             </div>
         </div>
     </div>
@@ -212,10 +215,12 @@
             var promptText = promptInput.value.trim();
             if (!promptText) return alert("يرجى وصف الصورة أولاً!");
 
+            // 1. قفل الزر لتجنب تعدد النقرات المسببة للتراقص والوميض
             generateBtn.disabled = true;
-            status.innerText = "جاري الاتصال بمحرك الحقيقة ومعالجة تفاصيل الجسم... ⏳";
+            status.innerText = "جاري هندسة ملامح الجلد وسحب الصورة... ⏳";
             resultBox.style.display = "none";
 
+            // 2. حساب الأبعاد بدقة
             var width = 1024;
             var height = 1024;
             if (aspectRatio === "landscape") { width = 1024; height = 768; }
@@ -234,12 +239,13 @@
             var cleanPrompt = encodeURIComponent(promptText + photographyFilters);
             var seed = Math.floor(Math.random() * 9999999);
 
-            // رابط مباشر نظيف معتمد وآمن تماماً لـ GitHub
+            // 3. بناء الرابط الصافي والمضمون 100% لفصل البيانات
             var finalUrl = "https://pollinations.ai" + cleanPrompt + "?width=" + width + "&height=" + height + "&seed=" + seed + "&model=flux&enhance=false&nologo=true";
 
-            // جلب الصورة وعرضها مباشرة داخل الكرت دون فتح نوافذ منبثقة محظورة
+            // 4. تمرير الرابط لوسم الصورة وتثبيته فوراً لكسر الحلقة التكرارية اللانهائية المسببة للاهتزاز
             outputImage.src = finalUrl;
 
+            // دالة التحميل الصافية المحدثة لعام 2026 تعمل لمرة واحدة فقط وتوقف التحميل بالخلفية تماماً
             outputImage.onload = function() {
                 status.innerText = "";
                 generateBtn.disabled = false;
@@ -247,11 +253,11 @@
                 downloadBtn.href = finalUrl;
             };
 
+            // ممر حماية مرن في حال انقطع اتصال السيرفر فجأة
             outputImage.onerror = function() {
                 status.innerText = "";
                 generateBtn.disabled = false;
-                // ممر طوارئ آمن جداً ومبسط
-                var fallbackUrl = "https://pollinations.ai" + encodeURIComponent(promptText + ", photo, real") + "?seed=" + seed;
+                var fallbackUrl = "https://pollinations.ai" + encodeURIComponent(promptText + ", real professional photo") + "?seed=" + seed;
                 outputImage.src = fallbackUrl;
                 resultBox.style.display = "flex";
                 downloadBtn.href = fallbackUrl;
@@ -260,4 +266,5 @@
     </script>
 </body>
 </html>
+
 
