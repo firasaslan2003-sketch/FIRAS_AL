@@ -1,0 +1,27 @@
+name: Generate Android APK
+on: 
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: # لتشغيل البناء يدوياً
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # هذه الأداة ستقوم بتحويل ملف index.html و manifest.json إلى تطبيق APK
+      - name: Build APK
+        uses: ni554n/apk-builder-action@v2
+        with:
+          app-name: "FIRAS AI" # اسم التطبيق الذي سيظهر على هاتفك
+          package-name: "com.firas.ai.app"
+          icon: "https://flaticon.com" # أيقونة مؤقتة
+          # سيقوم الأكشن بالبحث عن ملف index.html تلقائياً وتحويله
